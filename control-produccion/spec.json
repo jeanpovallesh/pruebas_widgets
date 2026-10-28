@@ -16,7 +16,7 @@
     "metadataRef": "model-metadata.json"
   },
   "hosting": {
-    "baseUrl": "{{BASE_URL}}",
+    "baseUrl": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@4865f6c03fb11411bdf4f0a1a6c58eed311e75ac/control-produccion",
     "cacheBust": "?v=1.0.0"
   },
   "feeds": [

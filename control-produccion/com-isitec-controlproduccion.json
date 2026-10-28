@@ -12,14 +12,14 @@
     {
       "kind": "main",
       "tag": "com-isitec-controlproduccion",
-      "url": "{{BASE_URL}}/com-isitec-controlproduccion.js",
+      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@4865f6c03fb11411bdf4f0a1a6c58eed311e75ac/control-produccion/com-isitec-controlproduccion.js",
       "integrity": "",
       "ignoreIntegrity": true
     },
     {
       "kind": "styling",
       "tag": "com-isitec-controlproduccion-styling",
-      "url": "{{BASE_URL}}/com-isitec-controlproduccion_styling.js",
+      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@4865f6c03fb11411bdf4f0a1a6c58eed311e75ac/control-produccion/com-isitec-controlproduccion_styling.js",
       "integrity": "",
       "ignoreIntegrity": true
     }
