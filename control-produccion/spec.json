@@ -5,7 +5,7 @@
     "name": "Control de Producción",
     "id": "com.isitec.controlproduccion",
     "tag": "com-isitec-controlproduccion",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "prefix": "ControlProduccion",
     "description": "Tablero de control por orden de producción, área y mes",
     "mode": "solo-lectura",
@@ -16,8 +16,8 @@
     "metadataRef": "model-metadata.json"
   },
   "hosting": {
-    "baseUrl": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@4865f6c03fb11411bdf4f0a1a6c58eed311e75ac/control-produccion",
-    "cacheBust": "?v=1.0.0"
+    "baseUrl": "{{BASE_URL}}",
+    "cacheBust": "?v=1.0.1"
   },
   "feeds": [
     {
@@ -72,34 +72,74 @@
   ],
   "measures": [
     {
-      "id": "Valor",
-      "ref": "SignedData",
+      "id": "Cantidad",
+      "ref": "Ctd",
       "role": "value",
       "aggregation": "additive",
       "required": true,
       "format": "decimal2",
-      "unit": "unidades",
       "goodDirection": "up"
+    },
+    {
+      "id": "CostoTotal",
+      "ref": "Costo_total",
+      "role": "value",
+      "aggregation": "additive",
+      "required": true,
+      "format": "currency",
+      "goodDirection": "down"
+    },
+    {
+      "id": "CostoUnit",
+      "role": "ratio",
+      "numerator": "CostoTotal",
+      "denominator": "Cantidad",
+      "optional": true,
+      "format": "currency",
+      "goodDirection": "down"
     }
   ],
   "components": [
     {
-      "id": "kpiTotal",
+      "id": "kpiCantidad",
       "type": "kpi-card",
-      "title": "Valor total",
+      "title": "Cantidad total",
       "uses": {
         "measures": [
-          "Valor"
+          "Cantidad"
         ]
       }
     },
     {
-      "id": "kpiEstado",
-      "type": "kpi-card-split",
-      "title": "Valor por estado de la orden",
+      "id": "kpiCostoTotal",
+      "type": "kpi-card",
+      "title": "Costo total",
       "uses": {
         "measures": [
-          "Valor"
+          "CostoTotal"
+        ]
+      }
+    },
+    {
+      "id": "kpiCostoUnit",
+      "type": "kpi-card",
+      "title": "Costo unitario promedio",
+      "uses": {
+        "measures": [
+          "CostoUnit"
+        ]
+      },
+      "requires": [
+        "CostoUnit"
+      ]
+    },
+    {
+      "id": "kpiEstado",
+      "type": "kpi-card-split",
+      "title": "Costo total por estado de la orden",
+      "uses": {
+        "measures": [
+          "CostoTotal"
         ],
         "split": "Estado"
       },
@@ -113,11 +153,11 @@
     {
       "id": "donaAreas",
       "type": "donut-share",
-      "title": "Reparto por área",
+      "title": "Reparto del costo por área",
       "uses": {
         "axis": "COD_AREA",
         "measures": [
-          "Valor"
+          "CostoTotal"
         ]
       },
       "options": {
@@ -132,12 +172,12 @@
     {
       "id": "barrasAreaEstado",
       "type": "stacked-bars",
-      "title": "Valor por área y estado",
+      "title": "Costo total por área y estado",
       "uses": {
         "axis": "COD_AREA",
         "series": "Estado",
         "measures": [
-          "Valor"
+          "CostoTotal"
         ]
       },
       "requires": [
@@ -152,12 +192,12 @@
     {
       "id": "barrasOrdenes",
       "type": "stacked-bars",
-      "title": "Órdenes con mayor valor",
+      "title": "Órdenes con mayor costo",
       "uses": {
         "axis": "ORDEN_PRD",
         "series": "COD_AREA",
         "measures": [
-          "Valor"
+          "CostoTotal"
         ]
       },
       "options": {
@@ -169,12 +209,30 @@
     {
       "id": "matrizAreaMes",
       "type": "cross-matrix",
-      "title": "Área × mes",
+      "title": "Costo total: área × mes",
       "uses": {
         "rows": "COD_AREA",
         "columns": "PERIODOMES",
         "measures": [
-          "Valor"
+          "CostoTotal"
+        ]
+      },
+      "options": {
+        "rowTotal": true,
+        "columnTotal": true,
+        "heat": true,
+        "search": "rows"
+      }
+    },
+    {
+      "id": "matrizCtdAreaMes",
+      "type": "cross-matrix",
+      "title": "Cantidad: área × mes",
+      "uses": {
+        "rows": "COD_AREA",
+        "columns": "PERIODOMES",
+        "measures": [
+          "Cantidad"
         ]
       },
       "options": {
@@ -197,7 +255,9 @@
           "PERIODOMES"
         ],
         "measures": [
-          "Valor"
+          "Cantidad",
+          "CostoTotal",
+          "CostoUnit"
         ]
       },
       "options": {
@@ -207,6 +267,25 @@
         "heat": true,
         "search": "rows",
         "maxRows": 1000
+      }
+    },
+    {
+      "id": "tablaOrdenes",
+      "type": "detail-table",
+      "title": "Detalle por orden de producción",
+      "uses": {
+        "rows": "ORDEN_PRD",
+        "measures": [
+          "Cantidad",
+          "CostoTotal",
+          "CostoUnit"
+        ]
+      },
+      "options": {
+        "search": "rows",
+        "pageSize": 15,
+        "totalsRow": true,
+        "dropColumnsWithoutData": true
       }
     }
   ],
@@ -299,13 +378,16 @@
   },
   "assumptions": [
     "model.type = planning (confirmado por el usuario).",
-    "Modelo antiguo sin indicadores: SignedData es la única medida (confirmado por el usuario); se trata como aditiva con 2 decimales y unidad 'unidades' (supuestos, editables).",
-    "El nivel del control es ORDEN_PRD, COD_AREA y PERIODOMES: los tres son feeds requeridos; PERIODOMES es ordenado y no se reduce entre meses (aditiva).",
-    "La tabla dinámica principal usa filas ORDEN_PRD > COD_AREA y columnas PERIODOMES.",
+    "Las medidas son las que SAC entrega en el feed de medidas (confirmado con captura del widget): Ctd, Costo_total y Costo_und. SignedData era solo la columna física y se descarta.",
+    "Ctd y Costo_total son aditivas; unidad y moneda las resuelve SAC en tiempo de ejecución (medidas de unidad variable, sin unidad fija en el código).",
+    "Costo_und es un costo unitario: no se suma ni se promedia. El widget muestra el 'Costo unitario promedio' ponderado = Costo_total / Ctd sobre las filas filtradas; si Costo_und se agrega al Builder, no se usa.",
+    "Sentido favorable: Costo_total y costo unitario, a la baja; Cantidad, al alza (solo afecta colores de variación, que no se usan sin comparación).",
+    "El nivel del control es ORDEN_PRD, COD_AREA y PERIODOMES: los tres son feeds requeridos; PERIODOMES es ordenado y no se reduce entre meses.",
+    "La tabla dinámica principal usa filas ORDEN_PRD > COD_AREA, columnas PERIODOMES y las tres medidas.",
     "Versin es feed opcional con filtro de selección única: si no se agrega ni se filtra en la story, SAC suma todas las versiones.",
     "Estado y Cliente (propiedades de ORDEN_PRD) son feeds opcionales; sin ellos se ocultan sus componentes y filtros. Agrupador, Fecha_inicio y Fecha_fin quedan fuera para no pasar de 8 feeds.",
     "Los filtros de mes, área, estado y cliente son de selección múltiple; el de versión es de selección única.",
-    "Sin pedido de comparación entre periodos no se incluyen variaciones.",
-    "No se incluyen insights, metas ni textos de negocio."
+    "Sin pedido de comparación entre periodos no se incluyen variaciones ni metas.",
+    "No se incluyen insights ni textos de negocio."
   ]
 }

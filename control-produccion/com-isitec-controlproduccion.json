@@ -1,6 +1,6 @@
 {
   "id": "com.isitec.controlproduccion",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Control de Producción",
   "description": "Tablero de control por orden de producción, área y mes",
   "newInstancePrefix": "ControlProduccion",
@@ -12,14 +12,14 @@
     {
       "kind": "main",
       "tag": "com-isitec-controlproduccion",
-      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@4865f6c03fb11411bdf4f0a1a6c58eed311e75ac/control-produccion/com-isitec-controlproduccion.js",
+      "url": "{{BASE_URL}}/com-isitec-controlproduccion.js",
       "integrity": "",
       "ignoreIntegrity": true
     },
     {
       "kind": "styling",
       "tag": "com-isitec-controlproduccion-styling",
-      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@4865f6c03fb11411bdf4f0a1a6c58eed311e75ac/control-produccion/com-isitec-controlproduccion_styling.js",
+      "url": "{{BASE_URL}}/com-isitec-controlproduccion_styling.js",
       "integrity": "",
       "ignoreIntegrity": true
     }
@@ -30,40 +30,60 @@
       "description": "Título",
       "default": "Control de Producción"
     },
-    "titulo_kpiTotal": {
+    "titulo_kpiCantidad": {
       "type": "string",
-      "description": "Título: Valor total",
-      "default": "Valor total"
+      "description": "Título: Cantidad total",
+      "default": "Cantidad total"
+    },
+    "titulo_kpiCostoTotal": {
+      "type": "string",
+      "description": "Título: Costo total",
+      "default": "Costo total"
+    },
+    "titulo_kpiCostoUnit": {
+      "type": "string",
+      "description": "Título: Costo unitario promedio",
+      "default": "Costo unitario promedio"
     },
     "titulo_kpiEstado": {
       "type": "string",
-      "description": "Título: Valor por estado de la orden",
-      "default": "Valor por estado de la orden"
+      "description": "Título: Costo total por estado de la orden",
+      "default": "Costo total por estado de la orden"
     },
     "titulo_donaAreas": {
       "type": "string",
-      "description": "Título: Reparto por área",
-      "default": "Reparto por área"
+      "description": "Título: Reparto del costo por área",
+      "default": "Reparto del costo por área"
     },
     "titulo_barrasAreaEstado": {
       "type": "string",
-      "description": "Título: Valor por área y estado",
-      "default": "Valor por área y estado"
+      "description": "Título: Costo total por área y estado",
+      "default": "Costo total por área y estado"
     },
     "titulo_barrasOrdenes": {
       "type": "string",
-      "description": "Título: Órdenes con mayor valor",
-      "default": "Órdenes con mayor valor"
+      "description": "Título: Órdenes con mayor costo",
+      "default": "Órdenes con mayor costo"
     },
     "titulo_matrizAreaMes": {
       "type": "string",
-      "description": "Título: Área × mes",
-      "default": "Área × mes"
+      "description": "Título: Costo total: área × mes",
+      "default": "Costo total: área × mes"
+    },
+    "titulo_matrizCtdAreaMes": {
+      "type": "string",
+      "description": "Título: Cantidad: área × mes",
+      "default": "Cantidad: área × mes"
     },
     "titulo_pivotControl": {
       "type": "string",
       "description": "Título: Control por orden, área y mes",
       "default": "Control por orden, área y mes"
+    },
+    "titulo_tablaOrdenes": {
+      "type": "string",
+      "description": "Título: Detalle por orden de producción",
+      "default": "Detalle por orden de producción"
     },
     "etiqueta_fMes": {
       "type": "string",
@@ -113,7 +133,7 @@
         },
         {
           "id": "measures",
-          "description": "Medidas: SignedData",
+          "description": "Medidas: Ctd, Costo_total",
           "type": "mainStructureMember"
         }
       ]
