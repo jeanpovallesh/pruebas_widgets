@@ -378,8 +378,8 @@
   },
   "assumptions": [
     "model.type = planning (confirmado por el usuario).",
-    "Las medidas son las que SAC entrega en el feed de medidas (confirmado con captura del widget): Ctd, Costo_total y Costo_und. SignedData era solo la columna física y se descarta.",
-    "Ctd y Costo_total son aditivas; unidad y moneda las resuelve SAC en tiempo de ejecución (medidas de unidad variable, sin unidad fija en el código).",
+    "Ctd, Costo_total y Costo_und son cuentas de la dimensión Account (confirmado por el usuario con captura del widget y por mensaje); entran por el feed de medidas y no son medidas del modelo. SignedData era solo la columna física del export y se descarta.",
+    "Sin accType conocido, Ctd y Costo_total se tratan como aditivas (flujos del periodo); unidad y moneda las resuelve SAC en tiempo de ejecución.",
     "Costo_und es un costo unitario: no se suma ni se promedia. El widget muestra el 'Costo unitario promedio' ponderado = Costo_total / Ctd sobre las filas filtradas; si Costo_und se agrega al Builder, no se usa.",
     "Sentido favorable: Costo_total y costo unitario, a la baja; Cantidad, al alza (solo afecta colores de variación, que no se usan sin comparación).",
     "El nivel del control es ORDEN_PRD, COD_AREA y PERIODOMES: los tres son feeds requeridos; PERIODOMES es ordenado y no se reduce entre meses.",
