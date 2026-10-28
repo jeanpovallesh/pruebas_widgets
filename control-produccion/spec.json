@@ -1,0 +1,311 @@
+{
+  "specVersion": "1.0",
+  "request": "Crea un dashboard de control a nivel de orden_prd, cod_area y periodomes. La metadata del modelo esta en el archivo adjunto.",
+  "widget": {
+    "name": "Control de Producción",
+    "id": "com.isitec.controlproduccion",
+    "tag": "com-isitec-controlproduccion",
+    "version": "1.0.0",
+    "prefix": "ControlProduccion",
+    "description": "Tablero de control por orden de producción, área y mes",
+    "mode": "solo-lectura",
+    "scope": "contenido"
+  },
+  "model": {
+    "id": "C188BGSPQ8CGU8V42C8AV5D5VK",
+    "metadataRef": "model-metadata.json"
+  },
+  "hosting": {
+    "baseUrl": "{{BASE_URL}}",
+    "cacheBust": "?v=1.0.0"
+  },
+  "feeds": [
+    {
+      "index": 0,
+      "role": "dimension",
+      "ref": "ORDEN_PRD",
+      "label": "Orden de producción"
+    },
+    {
+      "index": 1,
+      "role": "dimension",
+      "ref": "COD_AREA",
+      "label": "Área"
+    },
+    {
+      "index": 2,
+      "role": "dimension",
+      "ref": "PERIODOMES",
+      "label": "Mes",
+      "ordered": true,
+      "usedFor": [
+        "filter",
+        "time"
+      ]
+    },
+    {
+      "index": 3,
+      "role": "dimension",
+      "ref": "Versin",
+      "label": "Versión",
+      "optional": true,
+      "usedFor": [
+        "filter"
+      ]
+    },
+    {
+      "index": 4,
+      "role": "property",
+      "ref": "Estado",
+      "of": "ORDEN_PRD",
+      "label": "Estado de la orden",
+      "optional": true
+    },
+    {
+      "index": 5,
+      "role": "property",
+      "ref": "Cliente",
+      "of": "ORDEN_PRD",
+      "label": "Cliente",
+      "optional": true
+    }
+  ],
+  "measures": [
+    {
+      "id": "Valor",
+      "ref": "SignedData",
+      "role": "value",
+      "aggregation": "additive",
+      "required": true,
+      "format": "decimal2",
+      "unit": "unidades",
+      "goodDirection": "up"
+    }
+  ],
+  "components": [
+    {
+      "id": "kpiTotal",
+      "type": "kpi-card",
+      "title": "Valor total",
+      "uses": {
+        "measures": [
+          "Valor"
+        ]
+      }
+    },
+    {
+      "id": "kpiEstado",
+      "type": "kpi-card-split",
+      "title": "Valor por estado de la orden",
+      "uses": {
+        "measures": [
+          "Valor"
+        ],
+        "split": "Estado"
+      },
+      "requires": [
+        "Estado"
+      ],
+      "options": {
+        "mode": "share"
+      }
+    },
+    {
+      "id": "donaAreas",
+      "type": "donut-share",
+      "title": "Reparto por área",
+      "uses": {
+        "axis": "COD_AREA",
+        "measures": [
+          "Valor"
+        ]
+      },
+      "options": {
+        "centerTotal": true,
+        "legend": [
+          "share",
+          "value"
+        ],
+        "selectionGroup": "area"
+      }
+    },
+    {
+      "id": "barrasAreaEstado",
+      "type": "stacked-bars",
+      "title": "Valor por área y estado",
+      "uses": {
+        "axis": "COD_AREA",
+        "series": "Estado",
+        "measures": [
+          "Valor"
+        ]
+      },
+      "requires": [
+        "Estado"
+      ],
+      "options": {
+        "showTotal": true,
+        "sort": "total-desc",
+        "selectionGroup": "area"
+      }
+    },
+    {
+      "id": "barrasOrdenes",
+      "type": "stacked-bars",
+      "title": "Órdenes con mayor valor",
+      "uses": {
+        "axis": "ORDEN_PRD",
+        "series": "COD_AREA",
+        "measures": [
+          "Valor"
+        ]
+      },
+      "options": {
+        "showTotal": true,
+        "sort": "total-desc",
+        "topN": 10
+      }
+    },
+    {
+      "id": "matrizAreaMes",
+      "type": "cross-matrix",
+      "title": "Área × mes",
+      "uses": {
+        "rows": "COD_AREA",
+        "columns": "PERIODOMES",
+        "measures": [
+          "Valor"
+        ]
+      },
+      "options": {
+        "rowTotal": true,
+        "columnTotal": true,
+        "heat": true,
+        "search": "rows"
+      }
+    },
+    {
+      "id": "pivotControl",
+      "type": "pivot-table",
+      "title": "Control por orden, área y mes",
+      "uses": {
+        "rows": [
+          "ORDEN_PRD",
+          "COD_AREA"
+        ],
+        "columns": [
+          "PERIODOMES"
+        ],
+        "measures": [
+          "Valor"
+        ]
+      },
+      "options": {
+        "rowTotal": true,
+        "columnTotal": true,
+        "expandLevels": 1,
+        "heat": true,
+        "search": "rows",
+        "maxRows": 1000
+      }
+    }
+  ],
+  "filters": [
+    {
+      "id": "fMes",
+      "target": "PERIODOMES",
+      "ui": "combobox",
+      "by": [
+        "id",
+        "description"
+      ],
+      "includeAll": true,
+      "multi": true
+    },
+    {
+      "id": "fArea",
+      "target": "COD_AREA",
+      "ui": "combobox",
+      "by": [
+        "id",
+        "description"
+      ],
+      "includeAll": true,
+      "multi": true
+    },
+    {
+      "id": "fVersion",
+      "target": "Versin",
+      "ui": "combobox",
+      "by": [
+        "id",
+        "description"
+      ],
+      "includeAll": false,
+      "multi": false
+    },
+    {
+      "id": "fEstado",
+      "target": "Estado",
+      "by": "property",
+      "of": "ORDEN_PRD",
+      "ui": "combobox",
+      "includeAll": true,
+      "multi": true
+    },
+    {
+      "id": "fCliente",
+      "target": "Cliente",
+      "by": "property",
+      "of": "ORDEN_PRD",
+      "ui": "combobox",
+      "includeAll": true,
+      "multi": true
+    }
+  ],
+  "properties": [
+    {
+      "id": "title",
+      "type": "string",
+      "default": "Control de Producción",
+      "label": "Título",
+      "appliesTo": "tituloWidget"
+    }
+  ],
+  "methods": [],
+  "events": [],
+  "theme": {
+    "fontBody": "Inter, 'Segoe UI', Arial, sans-serif",
+    "fontDisplay": "'Plus Jakarta Sans', Inter, 'Segoe UI', Arial, sans-serif",
+    "colors": {
+      "superficie": "#ffffff",
+      "fondo": "#f8f9ff",
+      "texto": "#0b1c30",
+      "acento": "#0051d5",
+      "positivo": "#006c4b",
+      "alerta": "#ba1a1a"
+    },
+    "seriesPalette": [
+      "#131b2e",
+      "#0051d5",
+      "#316bf3",
+      "#6ffbbe",
+      "#a3defe",
+      "#b4c5ff",
+      "#76777d",
+      "#ffb3b6"
+    ],
+    "seriesColorRule": "estable por id de miembro, asignado por orden de id"
+  },
+  "assumptions": [
+    "model.type = planning (confirmado por el usuario).",
+    "Modelo antiguo sin indicadores: SignedData es la única medida (confirmado por el usuario); se trata como aditiva con 2 decimales y unidad 'unidades' (supuestos, editables).",
+    "El nivel del control es ORDEN_PRD, COD_AREA y PERIODOMES: los tres son feeds requeridos; PERIODOMES es ordenado y no se reduce entre meses (aditiva).",
+    "La tabla dinámica principal usa filas ORDEN_PRD > COD_AREA y columnas PERIODOMES.",
+    "Versin es feed opcional con filtro de selección única: si no se agrega ni se filtra en la story, SAC suma todas las versiones.",
+    "Estado y Cliente (propiedades de ORDEN_PRD) son feeds opcionales; sin ellos se ocultan sus componentes y filtros. Agrupador, Fecha_inicio y Fecha_fin quedan fuera para no pasar de 8 feeds.",
+    "Los filtros de mes, área, estado y cliente son de selección múltiple; el de versión es de selección única.",
+    "Sin pedido de comparación entre periodos no se incluyen variaciones.",
+    "No se incluyen insights, metas ni textos de negocio."
+  ]
+}

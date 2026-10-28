@@ -1,0 +1,122 @@
+{
+  "id": "com.isitec.controlproduccion",
+  "version": "1.0.0",
+  "name": "Control de Producción",
+  "description": "Tablero de control por orden de producción, área y mes",
+  "newInstancePrefix": "ControlProduccion",
+  "icon": "",
+  "vendor": "ISITEC",
+  "eula": "",
+  "license": "",
+  "webcomponents": [
+    {
+      "kind": "main",
+      "tag": "com-isitec-controlproduccion",
+      "url": "{{BASE_URL}}/com-isitec-controlproduccion.js",
+      "integrity": "",
+      "ignoreIntegrity": true
+    },
+    {
+      "kind": "styling",
+      "tag": "com-isitec-controlproduccion-styling",
+      "url": "{{BASE_URL}}/com-isitec-controlproduccion_styling.js",
+      "integrity": "",
+      "ignoreIntegrity": true
+    }
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Título",
+      "default": "Control de Producción"
+    },
+    "titulo_kpiTotal": {
+      "type": "string",
+      "description": "Título: Valor total",
+      "default": "Valor total"
+    },
+    "titulo_kpiEstado": {
+      "type": "string",
+      "description": "Título: Valor por estado de la orden",
+      "default": "Valor por estado de la orden"
+    },
+    "titulo_donaAreas": {
+      "type": "string",
+      "description": "Título: Reparto por área",
+      "default": "Reparto por área"
+    },
+    "titulo_barrasAreaEstado": {
+      "type": "string",
+      "description": "Título: Valor por área y estado",
+      "default": "Valor por área y estado"
+    },
+    "titulo_barrasOrdenes": {
+      "type": "string",
+      "description": "Título: Órdenes con mayor valor",
+      "default": "Órdenes con mayor valor"
+    },
+    "titulo_matrizAreaMes": {
+      "type": "string",
+      "description": "Título: Área × mes",
+      "default": "Área × mes"
+    },
+    "titulo_pivotControl": {
+      "type": "string",
+      "description": "Título: Control por orden, área y mes",
+      "default": "Control por orden, área y mes"
+    },
+    "etiqueta_fMes": {
+      "type": "string",
+      "description": "Etiqueta del filtro Mes",
+      "default": "Mes"
+    },
+    "etiqueta_fArea": {
+      "type": "string",
+      "description": "Etiqueta del filtro Área",
+      "default": "Área"
+    },
+    "etiqueta_fVersion": {
+      "type": "string",
+      "description": "Etiqueta del filtro Versión",
+      "default": "Versión"
+    },
+    "etiqueta_fEstado": {
+      "type": "string",
+      "description": "Etiqueta del filtro Estado de la orden",
+      "default": "Estado de la orden"
+    },
+    "etiqueta_fCliente": {
+      "type": "string",
+      "description": "Etiqueta del filtro Cliente",
+      "default": "Cliente"
+    },
+    "diagnostico": {
+      "type": "boolean",
+      "description": "Mostrar diagnóstico de datos",
+      "default": false
+    }
+  },
+  "methods": {},
+  "events": {},
+  "dataBindings": {
+    "myDataBinding": {
+      "feeds": [
+        {
+          "id": "dims",
+          "description": "Dimensiones, en este orden: Orden de producción (ORDEN_PRD), Área (COD_AREA), Mes (PERIODOMES), Versión (Versin)",
+          "type": "dimension"
+        },
+        {
+          "id": "props",
+          "description": "Propiedades de dimensión (agregar como dimensión): Estado de la orden (Estado), Cliente (Cliente)",
+          "type": "dimension"
+        },
+        {
+          "id": "measures",
+          "description": "Medidas: SignedData",
+          "type": "mainStructureMember"
+        }
+      ]
+    }
+  }
+}
