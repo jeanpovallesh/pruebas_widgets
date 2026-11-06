@@ -528,28 +528,38 @@
     }
 
     // ---- API para la carga directa desde la historia (opción B) ----
-    // Cantidad de lotes de `size` filas (por defecto 500)
-    getChunkCount(size) {
-      const n = Math.max(1, parseInt(size, 10) || 500);
-      return this._isValid() ? Math.ceil(this._state.rows.length / n) : 0;
+    // SAC Script no tiene JSON: todo se expone como texto o número simple y se separa con split("|").
+
+    // Fila `index` (base 0) como texto: Version|TIEMPO|CECO_PGP|AUDITORIA_PGP|EMPLEADOS_PGP_IND|CUENTA_PGP_IND|ENTIDAD_PGP|MONTO
+    getRowText(index) {
+      if (!this._isValid()) return '';
+      const r = this._state.rows[parseInt(index, 10)];
+      if (!r) return '';
+      return COLS.map(function (c) { return c === 'MONTO' ? plainDecimal(r.MONTO) : String(r[c]); }).join('|');
     }
 
-    // Lote `index` (base 0) como JSON de arreglos: [Version,TIEMPO,CECO_PGP,AUDITORIA_PGP,EMPLEADOS_PGP_IND,CUENTA_PGP_IND,ENTIDAD_PGP,MONTO]
-    getChunkJson(index, size) {
-      if (!this._isValid()) return '[]';
-      const n = Math.max(1, parseInt(size, 10) || 500);
-      const i = Math.max(0, parseInt(index, 10) || 0);
-      return JSON.stringify(this._state.rows.slice(i * n, (i + 1) * n).map(function (r) {
-        return COLS.map(function (c) { return c === 'MONTO' ? Number(r.MONTO) : String(r[c]); });
-      }));
+    // Versiones distintas del archivo, separadas por "|"
+    getVersionsText() {
+      return this._distinct('Version').join('|');
     }
 
-    // Alcance del archivo: versiones y periodos distintos (para limpiar antes de escribir)
-    getScopeJson() {
-      if (!this._isValid()) return '{"versions":[],"periods":[]}';
-      const v = {}, t = {};
-      this._state.rows.forEach(function (r) { v[r.Version] = 1; t[r.TIEMPO] = 1; });
-      return JSON.stringify({ versions: Object.keys(v).sort(), periods: Object.keys(t).sort() });
+    // Periodos TIEMPO distintos del archivo, separados por "|"
+    getPeriodsText() {
+      return this._distinct('TIEMPO').join('|');
+    }
+
+    // true si algún valor contiene "|" (rompería el split del script)
+    hasPipeInValues() {
+      return this._isValid() && this._state.rows.some(function (r) {
+        return COLS.some(function (c) { return c !== 'MONTO' && String(r[c]).indexOf('|') >= 0; });
+      });
+    }
+
+    _distinct(col) {
+      if (!this._isValid()) return [];
+      const seen = {};
+      this._state.rows.forEach(function (r) { seen[r[col]] = 1; });
+      return Object.keys(seen).sort();
     }
 
     getRowCount() {
