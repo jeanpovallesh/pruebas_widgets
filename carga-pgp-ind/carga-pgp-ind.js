@@ -366,25 +366,69 @@
     _download() {
       if (!this._isValid()) return;
       const base = (this._fileName || 'carga').replace(/\.[^.]+$/, '');
-      const blob = new Blob(['﻿' + this._csvText()], { type: 'text/csv;charset=utf-8' });
+      const fileName = base + '_normalizado.csv';
+      const content = '\uFEFF' + this._csvText();
+      const fallback = () => {
+        // SAC ejecuta el widget en un iframe que ignora el nombre del blob: se guarda con GUID y sin extension.
+        // Por eso se muestra tambien el texto para copiarlo y se indica el nombre correcto.
+        this._download_anchor(content, fileName);
+        this._showText();
+        this._notice('Si el navegador guardó el archivo sin extensión, renómbralo a "' + fileName + '". También puedes copiar el texto de abajo y pegarlo en un archivo .csv.');
+      };
+      if (typeof window.showSaveFilePicker === 'function') {
+        window.showSaveFilePicker({
+          suggestedName: fileName,
+          types: [{ description: 'CSV', accept: { 'text/csv': ['.csv'] } }]
+        }).then(function (h) { return h.createWritable(); })
+          .then((w) => w.write(content).then(function () { return w.close(); }))
+          .then(() => this._notice('Archivo guardado como ' + fileName + '.'))
+          .catch((err) => { if (err && err.name === 'AbortError') return; fallback(); });
+      } else {
+        fallback();
+      }
+    }
+
+    _download_anchor(content, fileName) {
+      const blob = new Blob([content], { type: 'text/csv;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = base + '_normalizado.csv';
+      a.download = fileName;
       this._shadowRoot.appendChild(a);
       a.click();
       this._shadowRoot.removeChild(a);
       setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
     }
 
+    _showText() {
+      const box = this._shadowRoot.getElementById('csvbox');
+      if (!box || !this._isValid()) return null;
+      box.hidden = false;
+      const ta = this._shadowRoot.getElementById('csvtext');
+      ta.value = this._csvText();
+      return ta;
+    }
+
     _copy() {
       if (!this._isValid()) return;
       const text = this._csvText();
-      const done = (ok) => this._notice(ok ? 'CSV normalizado copiado al portapapeles.' : 'No se pudo copiar; usa "Descargar CSV normalizado".');
+      const fail = () => {
+        const ta = this._showText();
+        if (ta) { ta.focus(); ta.select(); }
+        this._notice('Selecciona el texto de abajo y cópialo (Ctrl+C) para pegarlo en un archivo .csv.');
+      };
+      const viaSelection = () => {
+        const ta = this._showText();
+        if (!ta) return fail();
+        ta.focus(); ta.select();
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+        if (ok) this._notice('CSV normalizado copiado al portapapeles.'); else fail();
+      };
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+        navigator.clipboard.writeText(text).then(() => this._notice('CSV normalizado copiado al portapapeles.'), viaSelection);
       } else {
-        done(false);
+        viaSelection();
       }
     }
 
@@ -456,7 +500,9 @@
         <button type="button" class="primary" data-act="download" ${valid ? '' : 'disabled'}>Descargar CSV normalizado</button>
         <button type="button" data-act="copy" ${valid ? '' : 'disabled'}>Copiar CSV</button>
         <button type="button" data-act="clear">Limpiar</button>
-      </div><p class="muted" id="notice" role="status"></p>`;
+      </div><p class="muted" id="notice" role="status"></p>
+      <div id="csvbox" hidden><label for="csvtext" class="muted">CSV normalizado (seleccionar todo y copiar)</label>
+      <textarea id="csvtext" readonly rows="8" style="width:100%;box-sizing:border-box;font:12px monospace"></textarea></div>`;
 
       out.innerHTML = html;
     }
