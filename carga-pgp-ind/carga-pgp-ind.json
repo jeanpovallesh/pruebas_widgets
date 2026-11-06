@@ -1,6 +1,6 @@
 {
   "id": "com.isitec.cargapgpind",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "name": "Carga PGP IND (archivo plano)",
   "description": "Carga un archivo plano (CSV/TXT) de datos transaccionales del modelo SOLLA_PGP_IND, lo valida contra la estructura del modelo y deja las filas listas para importar.",
   "newInstancePrefix": "CargaPGP",
@@ -10,14 +10,14 @@
     {
       "kind": "main",
       "tag": "com-isitec-cargapgpind",
-      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@7d1b956a0214c7a21d7178668d3608bd500a7df1/carga-pgp-ind/carga-pgp-ind.js",
+      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@39efb7acb7e2b05f91fe92c2a3bd7f6d94543631/carga-pgp-ind/carga-pgp-ind.js",
       "integrity": "",
       "ignoreIntegrity": true
     },
     {
       "kind": "styling",
       "tag": "com-isitec-cargapgpind-styling",
-      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@7d1b956a0214c7a21d7178668d3608bd500a7df1/carga-pgp-ind/carga-pgp-ind_styling.js",
+      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@39efb7acb7e2b05f91fe92c2a3bd7f6d94543631/carga-pgp-ind/carga-pgp-ind_styling.js",
       "integrity": "",
       "ignoreIntegrity": true
     }
@@ -89,6 +89,17 @@
     "hasPipeInValues": {
       "returnType": "boolean",
       "description": "true si algún valor del archivo contiene el carácter | (rompería el split del script)"
+    },
+    "getMembersText": {
+      "returnType": "string",
+      "description": "Miembros distintos del archivo para una dimensión (Version, TIEMPO, CECO_PGP, AUDITORIA_PGP, EMPLEADOS_PGP_IND, CUENTA_PGP_IND, ENTIDAD_PGP), separados por |",
+      "parameters": [
+        {
+          "name": "dimension",
+          "type": "string",
+          "description": "Nombre de la dimensión"
+        }
+      ]
     }
   },
   "events": {
