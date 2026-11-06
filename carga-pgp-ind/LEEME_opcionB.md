@@ -8,7 +8,7 @@
    - publica la versión.
 
 ## Qué hay que armar en la historia (una sola vez)
-- Importar el manifiesto v1.0.3 y colocar el widget (`CargaPgp_1`).
+- Importar el manifiesto v1.0.4 y colocar el widget (`CargaPgp_1`).
   El widget entrega texto separado por `|` (getRowText, getVersionsText, getPeriodsText); el script no usa JSON.
 - Una **tabla de planificación** sobre SOLLA_PGP_IND (`Table_Carga`), oculta (visibilidad en runtime = falso)
   y con la planificación habilitada. Debe poder resolver las 7 dimensiones del modelo.
@@ -24,3 +24,16 @@
 - Rendimiento: ~500 filas por submit es la referencia; 5.000+ filas pueden tardar minutos.
 - No hay informe de filas rechazadas: solo el conteo `fallidas`.
 - Las escrituras van a una versión privada hasta publicar; si el usuario cierra la historia a mitad, no se publica.
+
+## Filtrado uno a uno antes de cada setUserInput
+`setUserInput` solo escribe celdas visibles, así que el script filtra la tabla al miembro exacto de cada dimensión
+de la fila y luego escribe en la única celda visible:
+- Se vuelve a filtrar solo la dimensión cuyo miembro cambió respecto a la fila anterior, con la actualización de la tabla
+  en pausa (`setRefreshPaused`) para refrescar una sola vez por fila.
+- Se hace `submitData()` después de cada fila, para que el filtro siguiente no descarte lo escrito.
+- La tabla ya no necesita contener todos los miembros: puede quedar con una celda visible a la vez.
+- Los miembros deben existir antes en el modelo (datos maestros), si no el filtro no los resuelve.
+- **Costo:** cada cambio de filtro refresca la tabla y cada submit va al servidor. Con 40 filas es aceptable; con
+  miles de filas puede tardar mucho. Conviene ordenar el archivo por las dimensiones que menos cambian
+  (Version, TIEMPO, AUDITORIA, ENTIDAD) para filtrar menos veces.
+- Si quieres que además el usuario filtre a mano, agrega Input Controls sobre esas dimensiones en la historia.

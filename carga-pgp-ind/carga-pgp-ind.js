@@ -548,6 +548,13 @@
       return this._distinct('TIEMPO').join('|');
     }
 
+    // Miembros distintos de una dimensión del archivo (CECO_PGP, EMPLEADOS_PGP_IND, ...), separados por "|"
+    getMembersText(dimension) {
+      const col = String(dimension || '');
+      if (COLS.indexOf(col) < 0 || col === 'MONTO') return '';
+      return this._distinct(col).join('|');
+    }
+
     // true si algún valor contiene "|" (rompería el split del script)
     hasPipeInValues() {
       return this._isValid() && this._state.rows.some(function (r) {

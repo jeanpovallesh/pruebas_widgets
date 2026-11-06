@@ -1,6 +1,6 @@
 // ============================================================================
 // PROTOTIPO OPCIÓN B — carga directa desde la historia (SAC Analytics Designer)
-// Widget: CargaPgp_1 (v1.0.3, sin JSON)  Tabla de planificación oculta: Table_Carga
+// Widget: CargaPgp_1 (v1.0.4, sin JSON)  Tabla de planificación oculta: Table_Carga
 //                                        Botón: Button_Cargar   Texto de estado: Text_Estado
 // Data Action de limpieza: DA_LimpiarVersionTiempo (parámetros: P_VERSION, P_TIEMPO)
 // El widget entrega TEXTO plano separado por "|"; no se usa JSON en ningún punto.
@@ -38,12 +38,35 @@ for (var v = 0; v < versiones.length; v++) {
   }
 }
 
-// 2b) Escribir fila por fila en la tabla de planificación, con un submit cada TAM filas
+// 2b) Fila por fila: primero se filtra la tabla al miembro exacto de cada dimensión de ESA fila,
+//     y recién entonces se llama a setUserInput sobre la única celda visible.
+//     Solo se vuelve a filtrar una dimensión cuando su miembro cambia respecto a la fila anterior.
+//     Orden de las dimensiones en cada fila: Version, TIEMPO, CECO_PGP, AUDITORIA_PGP, EMPLEADOS_PGP_IND, CUENTA_PGP_IND, ENTIDAD_PGP, MONTO
+var dims = ["Version", "TIEMPO", "CECO_PGP", "AUDITORIA_PGP", "EMPLEADOS_PGP_IND", "CUENTA_PGP_IND", "ENTIDAD_PGP"];
+var previo = ["", "", "", "", "", "", ""];
+var ds = Table_Carga.getDataSource();
 var escritas = 0;
 var fallidas = 0;
 for (var i = 0; i < total; i++) {
-  // f = [Version, TIEMPO, CECO_PGP, AUDITORIA_PGP, EMPLEADOS_PGP_IND, CUENTA_PGP_IND, ENTIDAD_PGP, MONTO]
   var f = CargaPgp_1.getRowText(i).split("|");
+
+  // 1) detectar qué dimensiones cambiaron y filtrarlas (una sola actualización de la tabla por fila)
+  var cambio = false;
+  for (var d = 0; d < dims.length; d++) {
+    if (f[d] !== previo[d]) { cambio = true; }
+  }
+  if (cambio) {
+    ds.setRefreshPaused(true);
+    for (var d2 = 0; d2 < dims.length; d2++) {
+      if (f[d2] !== previo[d2]) {
+        ds.setDimensionFilter(dims[d2], f[d2]);   // un solo miembro
+        previo[d2] = f[d2];
+      }
+    }
+    ds.setRefreshPaused(false);                   // refresca la tabla una vez con todos los filtros nuevos
+  }
+
+  // 2) escribir en la única celda visible
   var sel = {
     "Version": f[0],
     "TIEMPO": f[1],
@@ -53,13 +76,14 @@ for (var i = 0; i < total; i++) {
     "CUENTA_PGP_IND": f[5],
     "ENTIDAD_PGP": f[6]
   };
-  // Si el modelo tiene una sola medida, no hace falta "@MeasureDimension".
-  // Si SAC lo pide, agregar:  sel["@MeasureDimension"] = "MONTO";
+  // Si SAC pide la medida:  sel["@MeasureDimension"] = "MONTO";
   var ok = Table_Carga.getPlanning().setUserInput(sel, f[7]);
   if (ok) { escritas = escritas + 1; } else { fallidas = fallidas + 1; }
 
+  // 3) confirmar la escritura antes de que el siguiente filtro refresque la tabla
+  Table_Carga.getPlanning().submitData();
+
   if ((i + 1) % TAM === 0 || i === total - 1) {
-    Table_Carga.getPlanning().submitData();
     Text_Estado.applyText("Avance " + (i + 1) + " de " + total + " — escritas " + escritas + ", fallidas " + fallidas);
   }
 }
