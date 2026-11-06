@@ -10,14 +10,14 @@
     {
       "kind": "main",
       "tag": "com-isitec-cargapgpind",
-      "url": "{{BASE_URL}}/carga-pgp-ind.js",
+      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@8d5494b209d1b6129754efe60fc72720e98a318b/carga-pgp-ind/carga-pgp-ind.js",
       "integrity": "",
       "ignoreIntegrity": true
     },
     {
       "kind": "styling",
       "tag": "com-isitec-cargapgpind-styling",
-      "url": "{{BASE_URL}}/carga-pgp-ind_styling.js",
+      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@8d5494b209d1b6129754efe60fc72720e98a318b/carga-pgp-ind/carga-pgp-ind_styling.js",
       "integrity": "",
       "ignoreIntegrity": true
     }
