@@ -3,6 +3,7 @@
 // Widget: CargaPgp_1 (v1.0.4, sin JSON)  Tabla de planificación oculta: Table_Carga
 //                                        Botón: Button_Cargar   Texto de estado: Text_Estado
 // Data Action de limpieza: DA_LimpiarVersionTiempo (parámetros: P_VERSION, P_TIEMPO)
+// Convención: toda concatenación de texto con un número usa .toString() (SAC Script no convierte solo).
 // El widget entrega TEXTO plano separado por "|"; no se usa JSON en ningún punto.
 // Es un PROTOTIPO: probar primero con valido.csv (40 filas) antes de usar archivos grandes.
 // ============================================================================
@@ -12,11 +13,11 @@
 var okArchivo = CargaPgp_1.isValid() && !CargaPgp_1.hasPipeInValues();
 Button_Cargar.setEnabled(okArchivo);
 if (okArchivo) {
-  Text_Estado.applyText(CargaPgp_1.getRowCount() + " filas listas. Pulsa 'Cargar al modelo'.");
+  Text_Estado.applyText(CargaPgp_1.getRowCount().toString() + " filas listas. Pulsa 'Cargar al modelo'.");
 } else if (CargaPgp_1.isValid()) {
   Text_Estado.applyText("Algún valor contiene el carácter |; corrígelo en el archivo.");
 } else {
-  Text_Estado.applyText("Archivo con " + CargaPgp_1.getErrorCount() + " error(es). No se puede cargar.");
+  Text_Estado.applyText("Archivo con " + CargaPgp_1.getErrorCount().toString() + " error(es). No se puede cargar.");
 }
 
 // --- 2) Evento onClick del botón "Cargar al modelo"
@@ -71,7 +72,7 @@ for (var i = 0; i < total; i++) {
   var visibles = ds.getResultSet();
   if (visibles.length === 0) {
     fallidas = fallidas + 1;
-    Text_Estado.applyText("Fila " + (i + 1) + ": la celda no es visible tras filtrar (" + CargaPgp_1.getRowText(i) + ")");
+    Text_Estado.applyText("Fila " + (i + 1).toString() + ": la celda no es visible tras filtrar (" + CargaPgp_1.getRowText(i) + ")");
     continue;
   }
 
@@ -93,7 +94,7 @@ for (var i = 0; i < total; i++) {
   Table_Carga.getPlanning().submitData();
 
   if ((i + 1) % TAM === 0 || i === total - 1) {
-    Text_Estado.applyText("Avance " + (i + 1) + " de " + total + " — escritas " + escritas + ", fallidas " + fallidas);
+    Text_Estado.applyText("Avance " + (i + 1).toString() + " de " + total.toString() + " — escritas " + escritas.toString() + ", fallidas " + fallidas.toString());
   }
 }
 
@@ -103,4 +104,4 @@ for (var v2 = 0; v2 < versiones.length; v2++) {
   Table_Carga.getPlanning().getPublicVersion(nombre).publish();
 }
 
-Text_Estado.applyText("Terminado: " + escritas + " filas escritas, " + fallidas + " rechazadas por la tabla.");
+Text_Estado.applyText("Terminado: " + escritas.toString() + " filas escritas, " + fallidas.toString() + " rechazadas por la tabla.");
