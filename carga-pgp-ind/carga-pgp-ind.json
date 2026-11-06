@@ -1,0 +1,76 @@
+{
+  "id": "com.isitec.cargapgpind",
+  "version": "1.0.0",
+  "name": "Carga PGP IND (archivo plano)",
+  "description": "Carga un archivo plano (CSV/TXT) de datos transaccionales del modelo SOLLA_PGP_IND, lo valida contra la estructura del modelo y deja las filas listas para importar.",
+  "newInstancePrefix": "CargaPGP",
+  "icon": "",
+  "vendor": "ISITEC",
+  "webcomponents": [
+    {
+      "kind": "main",
+      "tag": "com-isitec-cargapgpind",
+      "url": "{{BASE_URL}}/carga-pgp-ind.js",
+      "integrity": "",
+      "ignoreIntegrity": true
+    },
+    {
+      "kind": "styling",
+      "tag": "com-isitec-cargapgpind-styling",
+      "url": "{{BASE_URL}}/carga-pgp-ind_styling.js",
+      "integrity": "",
+      "ignoreIntegrity": true
+    }
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Título que se muestra encima de la zona de carga",
+      "default": "Carga de datos PGP IND"
+    },
+    "decimalSeparator": {
+      "type": "string",
+      "description": "Separador decimal esperado en MONTO: punto (.) o coma (,)",
+      "default": "."
+    },
+    "previewRows": {
+      "type": "integer",
+      "description": "Cantidad de filas que se muestran en la vista previa",
+      "default": 10
+    }
+  },
+  "methods": {
+    "getRowsJson": {
+      "returnType": "string",
+      "description": "Filas validadas como arreglo JSON de objetos con las 8 columnas del modelo. Devuelve [] si el archivo no es válido."
+    },
+    "getSummaryJson": {
+      "returnType": "string",
+      "description": "Resumen de la última carga como JSON: archivo, filas, total de MONTO, errores y totales por Version y TIEMPO."
+    },
+    "getRowCount": {
+      "returnType": "integer",
+      "description": "Cantidad de filas válidas leídas del archivo"
+    },
+    "getErrorCount": {
+      "returnType": "integer",
+      "description": "Cantidad total de errores de validación encontrados"
+    },
+    "isValid": {
+      "returnType": "boolean",
+      "description": "true si hay un archivo cargado, sin errores y con al menos una fila"
+    },
+    "getFileName": {
+      "returnType": "string",
+      "description": "Nombre del último archivo cargado"
+    },
+    "clearData": {
+      "description": "Descarta el archivo cargado y limpia el resumen"
+    }
+  },
+  "events": {
+    "onFileValidated": {
+      "description": "Se dispara cada vez que se carga y valida un archivo, o al revalidar tras cambiar el separador decimal"
+    }
+  }
+}
