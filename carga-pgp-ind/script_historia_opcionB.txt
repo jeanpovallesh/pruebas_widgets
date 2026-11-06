@@ -1,0 +1,67 @@
+// ============================================================================
+// PROTOTIPO OPCIÓN B — carga directa desde la historia (SAC Analytics Designer)
+// Widget: CargaPgp_1 (v1.0.2)   Tabla de planificación oculta: Table_Carga
+//                               Botón: Button_Cargar   Texto de estado: Text_Estado
+// Data Action de limpieza: DA_LimpiarVersionTiempo (parámetros: P_VERSION, P_TIEMPO)
+// Es un PROTOTIPO: probar primero con valido.csv (40 filas) antes de usar archivos grandes.
+// ============================================================================
+
+// --- 1) Evento onFileValidated del widget: habilita el botón solo si el archivo es válido
+// CargaPgp_1.onFileValidated():
+Button_Cargar.setEnabled(CargaPgp_1.isValid());
+if (CargaPgp_1.isValid()) {
+  Text_Estado.applyText(CargaPgp_1.getRowCount() + " filas listas. Pulsa 'Cargar al modelo'.");
+} else {
+  Text_Estado.applyText("Archivo con " + CargaPgp_1.getErrorCount() + " error(es). No se puede cargar.");
+}
+
+// --- 2) Evento onClick del botón "Cargar al modelo"
+// Button_Cargar.onClick():
+if (!CargaPgp_1.isValid()) { return; }
+
+var TAM = 500;                                   // filas por lote (SAC aguanta unos cientos por submit)
+var nLotes = CargaPgp_1.getChunkCount(TAM);
+var alcance = JSON.parse(CargaPgp_1.getScopeJson());   // { versions:[...], periods:[...] }
+
+// 2a) Reemplazo: borrar lo existente en Version x TIEMPO del archivo, para no duplicar si se carga dos veces.
+//     (setUserInput sobrescribe celdas, pero no borra las que ya no vienen en el archivo.)
+for (var v = 0; v < alcance.versions.length; v++) {
+  for (var p = 0; p < alcance.periods.length; p++) {
+    DA_LimpiarVersionTiempo.setParameterValue("P_VERSION", alcance.versions[v]);
+    DA_LimpiarVersionTiempo.setParameterValue("P_TIEMPO", alcance.periods[p]);
+    DA_LimpiarVersionTiempo.execute();
+  }
+}
+
+// 2b) Escribir lote por lote en la tabla de planificación
+var escritas = 0;
+var fallidas = 0;
+for (var i = 0; i < nLotes; i++) {
+  var lote = JSON.parse(CargaPgp_1.getChunkJson(i, TAM));   // [[Version,TIEMPO,CECO,AUD,EMP,CUENTA,ENT,MONTO],...]
+  for (var k = 0; k < lote.length; k++) {
+    var f = lote[k];
+    var sel = {
+      "Version": f[0],
+      "TIEMPO": f[1],
+      "CECO_PGP": f[2],
+      "AUDITORIA_PGP": f[3],
+      "EMPLEADOS_PGP_IND": f[4],
+      "CUENTA_PGP_IND": f[5],
+      "ENTIDAD_PGP": f[6]
+    };
+    // Si el modelo tiene una sola medida, no hace falta "@MeasureDimension".
+    // Si SAC lo pide, agregar:  sel["@MeasureDimension"] = "MONTO";
+    var ok = Table_Carga.getPlanning().setUserInput(sel, f[7].toString());
+    if (ok) { escritas = escritas + 1; } else { fallidas = fallidas + 1; }
+  }
+  Table_Carga.getPlanning().submitData();                  // un submit por lote
+  Text_Estado.applyText("Lote " + (i + 1) + " de " + nLotes + " — escritas " + escritas + ", fallidas " + fallidas);
+}
+
+// 2c) Publicar la versión (los cambios quedan en versión privada hasta publicar)
+for (var v2 = 0; v2 < alcance.versions.length; v2++) {
+  var nombre = alcance.versions[v2].replace("public.", "");
+  Table_Carga.getPlanning().getPublicVersion(nombre).publish();
+}
+
+Text_Estado.applyText("Terminado: " + escritas + " filas escritas, " + fallidas + " rechazadas por la tabla.");

@@ -527,6 +527,31 @@
       return JSON.stringify(summary);
     }
 
+    // ---- API para la carga directa desde la historia (opción B) ----
+    // Cantidad de lotes de `size` filas (por defecto 500)
+    getChunkCount(size) {
+      const n = Math.max(1, parseInt(size, 10) || 500);
+      return this._isValid() ? Math.ceil(this._state.rows.length / n) : 0;
+    }
+
+    // Lote `index` (base 0) como JSON de arreglos: [Version,TIEMPO,CECO_PGP,AUDITORIA_PGP,EMPLEADOS_PGP_IND,CUENTA_PGP_IND,ENTIDAD_PGP,MONTO]
+    getChunkJson(index, size) {
+      if (!this._isValid()) return '[]';
+      const n = Math.max(1, parseInt(size, 10) || 500);
+      const i = Math.max(0, parseInt(index, 10) || 0);
+      return JSON.stringify(this._state.rows.slice(i * n, (i + 1) * n).map(function (r) {
+        return COLS.map(function (c) { return c === 'MONTO' ? Number(r.MONTO) : String(r[c]); });
+      }));
+    }
+
+    // Alcance del archivo: versiones y periodos distintos (para limpiar antes de escribir)
+    getScopeJson() {
+      if (!this._isValid()) return '{"versions":[],"periods":[]}';
+      const v = {}, t = {};
+      this._state.rows.forEach(function (r) { v[r.Version] = 1; t[r.TIEMPO] = 1; });
+      return JSON.stringify({ versions: Object.keys(v).sort(), periods: Object.keys(t).sort() });
+    }
+
     getRowCount() {
       return this._state ? this._state.rows.length : 0;
     }
