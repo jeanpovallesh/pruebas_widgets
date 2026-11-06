@@ -1,6 +1,6 @@
 {
   "id": "com.isitec.cargapgpind",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Carga PGP IND (archivo plano)",
   "description": "Carga un archivo plano (CSV/TXT) de datos transaccionales del modelo SOLLA_PGP_IND, lo valida contra la estructura del modelo y deja las filas listas para importar.",
   "newInstancePrefix": "CargaPGP",
@@ -10,14 +10,14 @@
     {
       "kind": "main",
       "tag": "com-isitec-cargapgpind",
-      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@8d5494b209d1b6129754efe60fc72720e98a318b/carga-pgp-ind/carga-pgp-ind.js",
+      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@bc430d5f6412273a3a09ae687f13104407276f57/carga-pgp-ind/carga-pgp-ind.js",
       "integrity": "",
       "ignoreIntegrity": true
     },
     {
       "kind": "styling",
       "tag": "com-isitec-cargapgpind-styling",
-      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@8d5494b209d1b6129754efe60fc72720e98a318b/carga-pgp-ind/carga-pgp-ind_styling.js",
+      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@bc430d5f6412273a3a09ae687f13104407276f57/carga-pgp-ind/carga-pgp-ind_styling.js",
       "integrity": "",
       "ignoreIntegrity": true
     }
