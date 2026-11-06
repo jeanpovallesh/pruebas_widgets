@@ -1,6 +1,6 @@
 {
   "id": "com.isitec.cargapgpind",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "name": "Carga PGP IND (archivo plano)",
   "description": "Carga un archivo plano (CSV/TXT) de datos transaccionales del modelo SOLLA_PGP_IND, lo valida contra la estructura del modelo y deja las filas listas para importar.",
   "newInstancePrefix": "CargaPGP",
@@ -10,14 +10,14 @@
     {
       "kind": "main",
       "tag": "com-isitec-cargapgpind",
-      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@bc430d5f6412273a3a09ae687f13104407276f57/carga-pgp-ind/carga-pgp-ind.js",
+      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@d5d2dd1b121c451e5e9d1a423b3290050e4237a0/carga-pgp-ind/carga-pgp-ind.js",
       "integrity": "",
       "ignoreIntegrity": true
     },
     {
       "kind": "styling",
       "tag": "com-isitec-cargapgpind-styling",
-      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@bc430d5f6412273a3a09ae687f13104407276f57/carga-pgp-ind/carga-pgp-ind_styling.js",
+      "url": "https://cdn.jsdelivr.net/gh/jeanpovallesh/pruebas_widgets@d5d2dd1b121c451e5e9d1a423b3290050e4237a0/carga-pgp-ind/carga-pgp-ind_styling.js",
       "integrity": "",
       "ignoreIntegrity": true
     }
@@ -66,6 +66,37 @@
     },
     "clearData": {
       "description": "Descarta el archivo cargado y limpia el resumen"
+    },
+    "getChunkCount": {
+      "returnType": "integer",
+      "description": "Cantidad de lotes en que se divide el archivo válido, con 'size' filas por lote",
+      "parameters": [
+        {
+          "name": "size",
+          "type": "integer",
+          "description": "Filas por lote (ej. 500)"
+        }
+      ]
+    },
+    "getChunkJson": {
+      "returnType": "string",
+      "description": "Lote 'index' (base 0) como JSON de arreglos [Version,TIEMPO,CECO_PGP,AUDITORIA_PGP,EMPLEADOS_PGP_IND,CUENTA_PGP_IND,ENTIDAD_PGP,MONTO]",
+      "parameters": [
+        {
+          "name": "index",
+          "type": "integer",
+          "description": "Número de lote, base 0"
+        },
+        {
+          "name": "size",
+          "type": "integer",
+          "description": "Filas por lote (ej. 500)"
+        }
+      ]
+    },
+    "getScopeJson": {
+      "returnType": "string",
+      "description": "JSON con las versiones y los periodos distintos del archivo: {versions:[],periods:[]}"
     }
   },
   "events": {
