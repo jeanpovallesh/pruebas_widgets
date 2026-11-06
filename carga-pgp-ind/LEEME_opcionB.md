@@ -37,3 +37,5 @@ de la fila y luego escribe en la única celda visible:
   miles de filas puede tardar mucho. Conviene ordenar el archivo por las dimensiones que menos cambian
   (Version, TIEMPO, AUDITORIA, ENTIDAD) para filtrar menos veces.
 - Si quieres que además el usuario filtre a mano, agrega Input Controls sobre esas dimensiones en la historia.
+- Después de filtrar, el script comprueba con `getResultSet()` que haya celdas visibles; si no, cuenta la fila como fallida
+  y no llama a `setUserInput`. Las 7 dimensiones deben estar en la tabla (filas, columnas) o como dimensiones libres/filtros.

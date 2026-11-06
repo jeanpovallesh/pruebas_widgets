@@ -66,6 +66,15 @@ for (var i = 0; i < total; i++) {
     ds.setRefreshPaused(false);                   // refresca la tabla una vez con todos los filtros nuevos
   }
 
+  // 1b) comprobar que la celda quedó visible en la tabla; si no, no se intenta escribir
+  //     (miembro inexistente en el modelo, o el filtro aún no se aplicó)
+  var visibles = ds.getResultSet();
+  if (visibles.length === 0) {
+    fallidas = fallidas + 1;
+    Text_Estado.applyText("Fila " + (i + 1) + ": la celda no es visible tras filtrar (" + CargaPgp_1.getRowText(i) + ")");
+    continue;
+  }
+
   // 2) escribir en la única celda visible
   var sel = {
     "Version": f[0],
