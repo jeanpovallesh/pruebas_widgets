@@ -51,20 +51,18 @@ var fallidas = 0;
 for (var i = 0; i < total; i++) {
   var f = CargaPgp_1.getRowText(i).split("|");
 
-  // 1) detectar qué dimensiones cambiaron y filtrarlas (una sola actualización de la tabla por fila)
+  // 1) detectar qué dimensiones cambiaron y filtrarlas (cada filtro refresca la tabla; sin pausa, por compatibilidad)
   var cambio = false;
   for (var d = 0; d < dims.length; d++) {
     if (f[d] !== previo[d]) { cambio = true; }
   }
   if (cambio) {
-    ds.setRefreshPaused(true);
     for (var d2 = 0; d2 < dims.length; d2++) {
       if (f[d2] !== previo[d2]) {
         ds.setDimensionFilter(dims[d2], f[d2]);   // un solo miembro
         previo[d2] = f[d2];
       }
     }
-    ds.setRefreshPaused(false);                   // refresca la tabla una vez con todos los filtros nuevos
   }
 
   // 1b) comprobar que la celda quedó visible en la tabla; si no, no se intenta escribir
